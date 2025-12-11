@@ -5,12 +5,12 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'BroGigaChat - Your TopG Digital Brother',
+    title: 'BroGigaChad - Your TopG Digital Brother',
     description: 'The digital accountability partner that forces action, not just reminds. Stop planning. Start doing.',
     keywords: ['productivity', 'accountability', 'discipline', 'focus', 'motivation', 'strict mode'],
-    authors: [{ name: 'BroGigaChat Team' }],
+    authors: [{ name: 'BroGigaChad Team' }],
     openGraph: {
-        title: 'BroGigaChat - Your TopG Digital Brother',
+        title: 'BroGigaChad - Your TopG Digital Brother',
         description: 'The app that forces you to do what you said you would do.',
         type: 'website',
     },
