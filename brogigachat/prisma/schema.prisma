@@ -1,0 +1,198 @@
+// Prisma schema for BroGigaChad
+// Database: Neon PostgreSQL with Prisma Accelerate
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // For migrations
+}
+
+// ==========================================
+// USER MODEL
+// ==========================================
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  username          String   @unique
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Stats
+  aura              Int      @default(0)
+  level             Int      @default(1)
+  streak            Int      @default(0)
+  lastActiveAt      DateTime @default(now())
+  tasksCompleted    Int      @default(0)
+  strictModeCount   Int      @default(0)
+  
+  // Preferences
+  notificationsEnabled Boolean @default(true)
+  strictModeEnabled    Boolean @default(true)
+  
+  // Relations
+  tasks             Task[]
+  auraHistory       AuraEvent[]
+  badges            UserBadge[]
+  
+  @@index([username])
+  @@index([aura])
+}
+
+// ==========================================
+// TASK MODEL
+// ==========================================
+model Task {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title         String
+  description   String?
+  app           String    // Target app for deep linking
+  baseAura      Int       @default(100)
+  
+  // Status
+  status        TaskStatus @default(PENDING)
+  completed     Boolean    @default(false)
+  completedAt   DateTime?
+  auraGained    Int?
+  
+  // Scheduling
+  scheduledFor  DateTime
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  
+  // Skip tracking
+  skipCount     Int        @default(0)
+  lastSkippedAt DateTime?
+  
+  // Strict mode trigger
+  strictModeTriggered Boolean @default(false)
+  
+  @@index([userId])
+  @@index([scheduledFor])
+  @@index([status])
+}
+
+enum TaskStatus {
+  PENDING
+  NOTIFIED
+  SKIPPED
+  STRICT_MODE
+  COMPLETED
+  CANCELLED
+}
+
+// ==========================================
+// AURA EVENT MODEL (History tracking)
+// ==========================================
+model AuraEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  amount    Int      // Positive for gain, negative for loss
+  reason    AuraReason
+  taskId    String?  // Optional task reference
+  
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([createdAt])
+}
+
+enum AuraReason {
+  TASK_COMPLETE
+  FIRST_NOTIFICATION_BONUS
+  STREAK_BONUS
+  STRICT_MODE_BONUS
+  SKIP_PENALTY
+  CANCEL_PENALTY
+  BADGE_REWARD
+  CHALLENGE_WIN
+  DAILY_BONUS
+}
+
+// ==========================================
+// BADGE SYSTEM
+// ==========================================
+model Badge {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String
+  emoji       String
+  auraReward  Int         @default(0)
+  
+  // Unlock criteria
+  criteria    Json        // Flexible criteria like {tasksCompleted: 10} or {streak: 7}
+  
+  users       UserBadge[]
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId   String
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  
+  unlockedAt DateTime @default(now())
+  
+  @@unique([userId, badgeId])
+}
+
+// ==========================================
+// NOTIFICATION TRACKING
+// ==========================================
+model NotificationLog {
+  id        String   @id @default(cuid())
+  userId    String
+  taskId    String
+  
+  type      NotificationType
+  sentAt    DateTime @default(now())
+  
+  // Track user response
+  actionTaken NotificationAction?
+  respondedAt DateTime?
+  
+  @@index([userId])
+  @@index([taskId])
+}
+
+enum NotificationType {
+  FIRST_REMINDER
+  SECOND_REMINDER
+  FINAL_WARNING
+  STRICT_MODE_ACTIVATION
+}
+
+enum NotificationAction {
+  DO_IT
+  EXTEND_10
+  EXTEND_30
+  IGNORED
+}
+
+// ==========================================
+// FUTURE: SQUADS & SOCIAL
+// ==========================================
+// model Squad {
+//   id          String   @id @default(cuid())
+//   name        String
+//   code        String   @unique // Join code
+//   createdAt   DateTime @default(now())
+//   members     SquadMember[]
+// }
+// 
+// model SquadMember {
+//   id       String @id @default(cuid())
+//   squadId  String
+//   userId   String
+//   role     SquadRole @default(MEMBER)
+//   joinedAt DateTime @default(now())
+// }
