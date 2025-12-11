@@ -10,7 +10,7 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                // BroGigaChat Brand Colors
+                // BroGigaChad Brand Colors
                 background: '#0A0A0A',
                 surface: '#1F1F1F',
                 'surface-alt': '#2A2A2A',
@@ -36,7 +36,11 @@ const config: Config = {
             animation: {
                 'pulse-fast': 'pulse 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 'bounce-slow': 'bounce 2s infinite',
-                'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                shake: 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                shimmer: 'shimmer 2s linear infinite',
+                'slide-in': 'slideIn 0.3s ease-out',
+                'fade-in': 'fadeIn 0.2s ease-out',
+                glow: 'glow 2s ease-in-out infinite alternate',
             },
             keyframes: {
                 shake: {
@@ -45,6 +49,29 @@ const config: Config = {
                     '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
                     '40%, 60%': { transform: 'translate3d(4px, 0, 0)' },
                 },
+                shimmer: {
+                    '0%': { transform: 'translateX(-100%)' },
+                    '100%': { transform: 'translateX(100%)' },
+                },
+                slideIn: {
+                    '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                    '100%': { transform: 'translateY(0)', opacity: '1' },
+                },
+                fadeIn: {
+                    '0%': { opacity: '0' },
+                    '100%': { opacity: '1' },
+                },
+                glow: {
+                    '0%': { boxShadow: '0 0 5px rgba(234, 179, 8, 0.5)' },
+                    '100%': { boxShadow: '0 0 20px rgba(234, 179, 8, 0.8)' },
+                },
+            },
+            backdropBlur: {
+                xs: '2px',
+            },
+            boxShadow: {
+                glow: '0 0 20px rgba(234, 179, 8, 0.3)',
+                'glow-red': '0 0 20px rgba(220, 38, 38, 0.3)',
             },
         },
     },
