@@ -1,4 +1,4 @@
-# BroGigaChat
+# BroGigaChad
 
 > **Your Phone's New Strict Older Brother** 🔥
 
