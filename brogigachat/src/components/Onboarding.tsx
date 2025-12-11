@@ -21,7 +21,7 @@ export default function Onboarding() {
 
             {/* Title */}
             <h1 className="text-3xl font-bold text-white mb-2 text-center">
-                BroGigaChat
+                BroGigaChad
             </h1>
             <p className="text-gray-400 text-center mb-8">
                 Your Phone&apos;s New Strict Older Brother
