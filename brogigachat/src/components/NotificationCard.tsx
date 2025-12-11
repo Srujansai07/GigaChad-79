@@ -37,7 +37,7 @@ export default function NotificationCard() {
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                         <span className="text-2xl">🔔</span>
-                        <span className="font-bold text-primary">BROGIGACHAT</span>
+                        <span className="font-bold text-primary">BROGIGACHAD</span>
                     </div>
                     <button
                         onClick={dismissNotification}
