@@ -16,14 +16,34 @@
         "isolatedModules": true,
         "jsx": "preserve",
         "incremental": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
+        "noFallthroughCasesInSwitch": true,
+        "forceConsistentCasingInFileNames": true,
         "plugins": [
             {
                 "name": "next"
             }
         ],
+        "baseUrl": ".",
         "paths": {
             "@/*": [
                 "./src/*"
+            ],
+            "@/components/*": [
+                "./src/components/*"
+            ],
+            "@/lib/*": [
+                "./src/lib/*"
+            ],
+            "@/hooks/*": [
+                "./src/hooks/*"
+            ],
+            "@/stores/*": [
+                "./src/stores/*"
+            ],
+            "@/actions/*": [
+                "./src/actions/*"
             ]
         }
     },
@@ -31,7 +51,8 @@
         "next-env.d.ts",
         "**/*.ts",
         "**/*.tsx",
-        ".next/types/**/*.ts"
+        ".next/types/**/*.ts",
+        "prisma/**/*.ts"
     ],
     "exclude": [
         "node_modules"
