@@ -65,12 +65,14 @@ export const LEVELS: LevelInfo[] = [
 // Get level info from aura
 export function getLevelInfo(aura: number): LevelInfo {
     for (let i = LEVELS.length - 1; i >= 0; i--) {
-        if (aura >= LEVELS[i].minAura) {
-            return LEVELS[i];
+        const level = LEVELS[i];
+        if (level && aura >= level.minAura) {
+            return level;
         }
     }
-    return LEVELS[0];
+    return LEVELS[0] as LevelInfo;
 }
+
 
 // Calculate aura gain with multipliers
 export function calculateAuraGain(
@@ -103,3 +105,126 @@ export const DEEP_LINKS: Record<string, string> = {
     'Notes': 'mobilenotes://',
     'Other': '',
 };
+
+// Badge types
+export interface Badge {
+    id: string;
+    name: string;
+    description: string;
+    emoji: string;
+    criteria: string;
+    auraReward: number;
+    unlocked: boolean;
+    unlockedAt?: string;
+}
+
+// Challenge types
+export interface Challenge {
+    id: string;
+    name: string;
+    description: string;
+    type: 'solo' | 'pvp' | 'squad';
+    goal: number;
+    progress: number;
+    reward: number;
+    endsAt: string;
+    participants?: number;
+}
+
+// Habit types
+export interface Habit {
+    id: string;
+    name: string;
+    frequency: 'daily' | 'weekly';
+    streak: number;
+    completedToday: boolean;
+    bestStreak: number;
+    auraPerComplete: number;
+}
+
+// Notification types
+export interface AppNotification {
+    id: string;
+    type: 'task' | 'badge' | 'streak' | 'challenge' | 'system';
+    title: string;
+    body: string;
+    taskId?: string;
+    read: boolean;
+    createdAt: string;
+}
+
+// Squad types
+export interface Squad {
+    id: string;
+    name: string;
+    code: string;
+    members: SquadMember[];
+    totalAura: number;
+    weeklyGoal: number;
+    weeklyProgress: number;
+}
+
+export interface SquadMember {
+    id: string;
+    username: string;
+    aura: number;
+    level: number;
+    isLeader: boolean;
+}
+
+// PowerUp types
+export interface PowerUp {
+    id: string;
+    name: string;
+    description: string;
+    emoji: string;
+    effect: string;
+    duration: number;
+    active: boolean;
+    expiresAt?: string;
+}
+
+// Goal types
+export interface Goal {
+    id: string;
+    title: string;
+    target: number;
+    current: number;
+    unit: string;
+    deadline: string | null;
+    auraReward: number;
+    completed: boolean;
+}
+
+// Stats types
+export interface UserStats {
+    totalTasks: number;
+    completedTasks: number;
+    skippedTasks: number;
+    totalAura: number;
+    currentStreak: number;
+    bestStreak: number;
+    strictModeSessions: number;
+    averageDaily: number;
+    completionRate: number;
+}
+
+// Aura event types
+export type AuraEventReason =
+    | 'TASK_COMPLETE'
+    | 'STRICT_MODE_BONUS'
+    | 'STREAK_BONUS'
+    | 'BADGE_UNLOCK'
+    | 'CHALLENGE_WIN'
+    | 'SKIP_PENALTY'
+    | 'CANCEL_PENALTY';
+
+export interface AuraEvent {
+    id: string;
+    userId: string;
+    amount: number;
+    reason: AuraEventReason;
+    taskId?: string;
+    createdAt: string;
+}
+
