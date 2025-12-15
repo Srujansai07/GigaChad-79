@@ -179,20 +179,130 @@ enum NotificationAction {
 }
 
 // ==========================================
-// FUTURE: SQUADS & SOCIAL
+// SQUADS & SOCIAL
 // ==========================================
-// model Squad {
-//   id          String   @id @default(cuid())
-//   name        String
-//   code        String   @unique // Join code
-//   createdAt   DateTime @default(now())
-//   members     SquadMember[]
-// }
-// 
-// model SquadMember {
-//   id       String @id @default(cuid())
-//   squadId  String
-//   userId   String
-//   role     SquadRole @default(MEMBER)
-//   joinedAt DateTime @default(now())
-// }
+model Squad {
+  id          String        @id @default(cuid())
+  name        String
+  code        String        @unique // Join code
+  description String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  // Stats
+  totalAura   Int           @default(0)
+  weeklyGoal  Int           @default(100)
+  
+  members     SquadMember[]
+  
+  @@index([code])
+}
+
+model SquadMember {
+  id        String    @id @default(cuid())
+  squadId   String
+  squad     Squad     @relation(fields: [squadId], references: [id], onDelete: Cascade)
+  userId    String
+  role      SquadRole @default(MEMBER)
+  joinedAt  DateTime  @default(now())
+  
+  // Contribution
+  weeklyAura Int      @default(0)
+  
+  @@unique([squadId, userId])
+  @@index([userId])
+}
+
+enum SquadRole {
+  LEADER
+  MEMBER
+}
+
+// ==========================================
+// CHALLENGES
+// ==========================================
+model Challenge {
+  id          String        @id @default(cuid())
+  name        String
+  description String
+  type        ChallengeType
+  
+  // Goals
+  goal        Int
+  reward      Int           @default(500)
+  
+  // Timing
+  startsAt    DateTime
+  endsAt      DateTime
+  createdAt   DateTime      @default(now())
+  
+  // Status
+  active      Boolean       @default(true)
+  
+  @@index([type])
+  @@index([active])
+}
+
+enum ChallengeType {
+  SOLO
+  PVP
+  SQUAD
+}
+
+// ==========================================
+// HABITS
+// ==========================================
+model Habit {
+  id              String      @id @default(cuid())
+  userId          String
+  name            String
+  frequency       HabitFrequency @default(DAILY)
+  
+  // Stats
+  streak          Int         @default(0)
+  bestStreak      Int         @default(0)
+  completedToday  Boolean     @default(false)
+  lastCompletedAt DateTime?
+  
+  // Rewards
+  auraPerComplete Int         @default(50)
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  @@index([userId])
+}
+
+enum HabitFrequency {
+  DAILY
+  WEEKLY
+}
+
+// ==========================================
+// GOALS
+// ==========================================
+model Goal {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  
+  // Progress
+  target      Int
+  current     Int       @default(0)
+  unit        String    // "tasks", "days", "aura"
+  
+  // Timing
+  deadline    DateTime?
+  completedAt DateTime?
+  
+  // Rewards
+  auraReward  Int       @default(500)
+  completed   Boolean   @default(false)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([completed])
+}
+
