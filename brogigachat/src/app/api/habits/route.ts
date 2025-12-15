@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
+import { HabitFrequency } from '@prisma/client';
 
 // GET /api/habits - List user habits
 export async function GET(request: Request) {
@@ -12,27 +13,10 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Mock habits - would be from database
-        const habits = [
-            {
-                id: '1',
-                name: 'Morning Workout',
-                frequency: 'daily',
-                streak: 7,
-                completedToday: false,
-                bestStreak: 14,
-                auraPerComplete: 100,
-            },
-            {
-                id: '2',
-                name: 'Read 30 min',
-                frequency: 'daily',
-                streak: 5,
-                completedToday: false,
-                bestStreak: 21,
-                auraPerComplete: 75,
-            },
-        ];
+        const habits = await prisma.habit.findMany({
+            where: { userId: user.id },
+            orderBy: { createdAt: 'desc' },
+        });
 
         return NextResponse.json({
             habits,
@@ -61,16 +45,14 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Name and frequency required' }, { status: 400 });
         }
 
-        const habit = {
-            id: Date.now().toString(),
-            name,
-            frequency,
-            streak: 0,
-            completedToday: false,
-            bestStreak: 0,
-            auraPerComplete: auraPerComplete || 50,
-            createdAt: new Date(),
-        };
+        const habit = await prisma.habit.create({
+            data: {
+                userId: user.id,
+                name,
+                frequency: frequency.toUpperCase() as HabitFrequency,
+                auraPerComplete: auraPerComplete || 50,
+            },
+        });
 
         return NextResponse.json({
             success: true,
@@ -100,15 +82,46 @@ export async function PATCH(request: Request) {
         }
 
         if (action === 'complete') {
+            const habit = await prisma.habit.findUnique({ where: { id: habitId } });
+            if (!habit) return NextResponse.json({ error: 'Habit not found' }, { status: 404 });
+
+            // Update habit stats
+            const updatedHabit = await prisma.habit.update({
+                where: { id: habitId },
+                data: {
+                    completedToday: true,
+                    streak: { increment: 1 },
+                    lastCompletedAt: new Date(),
+                    // Update best streak if current streak > best streak (logic simplified for now)
+                },
+            });
+
+            // Award aura
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { aura: { increment: habit.auraPerComplete } },
+            });
+
             return NextResponse.json({
                 success: true,
                 message: 'Habit completed',
-                auraGained: 50,
+                auraGained: habit.auraPerComplete,
+                habit: updatedHabit,
             });
         } else if (action === 'uncomplete') {
+            // Revert completion (simplified)
+            const updatedHabit = await prisma.habit.update({
+                where: { id: habitId },
+                data: {
+                    completedToday: false,
+                    streak: { decrement: 1 },
+                },
+            });
+
             return NextResponse.json({
                 success: true,
                 message: 'Habit uncompleted',
+                habit: updatedHabit,
             });
         }
 
@@ -118,3 +131,4 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ error: 'Failed to update habit' }, { status: 500 });
     }
 }
+
