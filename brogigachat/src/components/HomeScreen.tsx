@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Flame, Plus, Zap, Trophy, CheckCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Flame, Plus, Zap, Trophy, CheckCircle, Loader2 } from 'lucide-react';
 import { useUserStore } from '@/stores/userStore';
 import { useTaskStore } from '@/stores/taskStore';
 import TaskCard from './TaskCard';
@@ -9,8 +9,12 @@ import AddTaskModal from './AddTaskModal';
 
 export default function HomeScreen() {
     const { user, levelInfo } = useUserStore();
-    const { tasks } = useTaskStore();
+    const { tasks, isLoading, error, fetchTasks } = useTaskStore();
     const [showAddModal, setShowAddModal] = useState(false);
+
+    useEffect(() => {
+        fetchTasks();
+    }, [fetchTasks]);
 
     const activeTasks = tasks.filter((t) => !t.completed);
     const completedToday = tasks.filter((t) => {
@@ -19,8 +23,30 @@ export default function HomeScreen() {
         return new Date(t.completedAt).toDateString() === today;
     });
 
+    if (isLoading && tasks.length === 0) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <Loader2 className="animate-spin text-primary" size={48} />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="p-4 text-center text-danger">
+                <p>Error loading tasks: {error}</p>
+                <button
+                    onClick={() => fetchTasks()}
+                    className="mt-4 px-4 py-2 bg-gray-800 rounded-lg"
+                >
+                    Retry
+                </button>
+            </div>
+        );
+    }
+
     return (
-        <div className="p-4 space-y-6">
+        <div className="p-4 space-y-6 pb-24">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -125,3 +151,4 @@ export default function HomeScreen() {
         </div>
     );
 }
+

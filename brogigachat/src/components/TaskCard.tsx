@@ -1,6 +1,7 @@
 'use client';
 
-import { AlertCircle, Zap, Clock, Check } from 'lucide-react';
+import { useState } from 'react';
+import { AlertCircle, Zap, Clock, Check, Loader2 } from 'lucide-react';
 import { Task } from '@/types';
 import { useTaskStore } from '@/stores/taskStore';
 import { useUserStore } from '@/stores/userStore';
@@ -10,12 +11,22 @@ interface TaskCardProps {
 }
 
 export default function TaskCard({ task }: TaskCardProps) {
-    const { triggerNotification, completeTask, skipCounts } = useTaskStore();
+    const { triggerNotification, completeTask } = useTaskStore();
     const { user } = useUserStore();
-    const skips = skipCounts[task.id] || 0;
+    const [isCompleting, setIsCompleting] = useState(false);
 
-    const handleComplete = () => {
-        completeTask(task.id, false);
+    // Use task.skips directly as it's now part of the Task object from API
+    const skips = task.skips || 0;
+
+    const handleComplete = async () => {
+        setIsCompleting(true);
+        try {
+            await completeTask(task.id, false);
+        } catch (error) {
+            console.error('Failed to complete task:', error);
+        } finally {
+            setIsCompleting(false);
+        }
     };
 
     const handleTestNotification = () => {
@@ -67,12 +78,14 @@ export default function TaskCard({ task }: TaskCardProps) {
                 </button>
                 <button
                     onClick={handleComplete}
-                    className="flex-1 flex items-center justify-center gap-2 py-2 bg-primary hover:bg-primary-hover rounded-lg text-white text-sm font-semibold transition-colors"
+                    disabled={isCompleting}
+                    className="flex-1 flex items-center justify-center gap-2 py-2 bg-primary hover:bg-primary-hover rounded-lg text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    <Check size={16} />
-                    Complete Now
+                    {isCompleting ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                    {isCompleting ? 'Completing...' : 'Complete Now'}
                 </button>
             </div>
         </div>
     );
 }
+

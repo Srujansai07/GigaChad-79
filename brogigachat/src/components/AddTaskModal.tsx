@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import { useTaskStore } from '@/stores/taskStore';
 import { APP_OPTIONS } from '@/types';
 
@@ -15,20 +15,27 @@ export default function AddTaskModal({ onClose }: AddTaskModalProps) {
     const [description, setDescription] = useState('');
     const [app, setApp] = useState<string>(APP_OPTIONS[0]);
     const [scheduledFor, setScheduledFor] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!title.trim()) return;
 
-        addTask({
-            title: title.trim(),
-            description: description.trim(),
-            app,
-            baseAura: 100,
-            scheduledFor: scheduledFor || new Date().toISOString(),
-        });
-
-        onClose();
+        setIsSubmitting(true);
+        try {
+            await addTask({
+                title: title.trim(),
+                description: description.trim(),
+                app,
+                baseAura: 100,
+                scheduledFor: scheduledFor || new Date().toISOString(),
+            });
+            onClose();
+        } catch (error) {
+            console.error('Failed to add task:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -101,13 +108,15 @@ export default function AddTaskModal({ onClose }: AddTaskModalProps) {
                     {/* Submit */}
                     <button
                         type="submit"
-                        disabled={!title.trim()}
-                        className="w-full py-4 bg-primary hover:bg-primary-hover disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-bold text-white transition-colors"
+                        disabled={!title.trim() || isSubmitting}
+                        className="w-full py-4 bg-primary hover:bg-primary-hover disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-bold text-white transition-colors flex items-center justify-center gap-2"
                     >
-                        Add Task
+                        {isSubmitting && <Loader2 size={20} className="animate-spin" />}
+                        {isSubmitting ? 'Adding...' : 'Add Task'}
                     </button>
                 </form>
             </div>
         </div>
     );
 }
+
