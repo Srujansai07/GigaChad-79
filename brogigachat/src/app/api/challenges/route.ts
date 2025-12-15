@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
+import { ChallengeType } from '@prisma/client';
 
 // GET /api/challenges - List challenges
 export async function GET(request: Request) {
@@ -13,39 +14,21 @@ export async function GET(request: Request) {
         }
 
         const { searchParams } = new URL(request.url);
-        const type = searchParams.get('type') || 'all';
+        const type = searchParams.get('type');
 
-        // Mock challenges for now - would be from database
-        const challenges = [
-            {
-                id: '1',
-                name: 'Morning Warrior',
-                description: 'Complete 5 tasks before 9 AM',
-                type: 'solo',
-                goal: 5,
-                progress: 0,
-                reward: 500,
-                endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-            },
-            {
-                id: '2',
-                name: 'Week Warrior',
-                description: 'Maintain a 7-day streak',
-                type: 'solo',
-                goal: 7,
-                progress: 0,
-                reward: 1000,
-                endsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            },
-        ];
+        const where: any = { active: true };
+        if (type && type !== 'all') {
+            where.type = type.toUpperCase() as ChallengeType;
+        }
 
-        const filteredChallenges = type === 'all'
-            ? challenges
-            : challenges.filter(c => c.type === type);
+        const challenges = await prisma.challenge.findMany({
+            where,
+            orderBy: { endsAt: 'asc' },
+        });
 
         return NextResponse.json({
-            challenges: filteredChallenges,
-            total: filteredChallenges.length,
+            challenges,
+            total: challenges.length,
         });
     } catch (error) {
         console.error('Challenges GET error:', error);
@@ -67,7 +50,8 @@ export async function POST(request: Request) {
         const { action, challengeId, challengeData } = body;
 
         if (action === 'join') {
-            // Join existing challenge
+            // Logic to join challenge (future implementation with participants table)
+            // For now, just return success
             return NextResponse.json({
                 success: true,
                 message: 'Joined challenge successfully',
@@ -75,14 +59,22 @@ export async function POST(request: Request) {
             });
         } else if (action === 'create') {
             // Create new challenge
+            const challenge = await prisma.challenge.create({
+                data: {
+                    name: challengeData.name,
+                    description: challengeData.description,
+                    type: challengeData.type.toUpperCase() as ChallengeType,
+                    goal: challengeData.goal,
+                    reward: challengeData.reward || 500,
+                    startsAt: new Date(challengeData.startsAt),
+                    endsAt: new Date(challengeData.endsAt),
+                    active: true,
+                },
+            });
+
             return NextResponse.json({
                 success: true,
-                challenge: {
-                    id: Date.now().toString(),
-                    ...challengeData,
-                    createdBy: user.id,
-                    createdAt: new Date(),
-                },
+                challenge,
             });
         }
 
@@ -92,3 +84,4 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Failed to process challenge' }, { status: 500 });
     }
 }
+
