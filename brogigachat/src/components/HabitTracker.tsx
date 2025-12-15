@@ -48,7 +48,7 @@ export default function HabitTracker() {
                 className="w-full p-4 flex items-center justify-between"
             >
                 <div className="flex items-center gap-3">
-                    <div className="text-2xl">ðŸŽ¯</div>
+                    <div className="text-2xl">🎯</div>
                     <div className="text-left">
                         <h3 className="font-bold text-white">Daily Habits</h3>
                         <p className="text-sm text-gray-400">{completedCount}/{habits.length} completed</p>
@@ -96,11 +96,11 @@ export default function HabitTracker() {
                                 </div>
                                 <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
                                     <span className="flex items-center gap-1">
-                                        <span className="text-streak">ðŸ”¥</span>
+                                        <span className="text-streak">🔥</span>
                                         {habit.streak} day streak
                                     </span>
                                     <span className="flex items-center gap-1">
-                                        <span className="text-aura">âš¡</span>
+                                        <span className="text-aura">⚡</span>
                                         +{habit.auraPerComplete} aura
                                     </span>
                                 </div>

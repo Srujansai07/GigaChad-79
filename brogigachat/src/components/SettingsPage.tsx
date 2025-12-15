@@ -207,7 +207,7 @@ export default function SettingsPage() {
 
             {/* Version */}
             <p className="text-center text-gray-600 text-xs mt-8">
-                BroGigaChad v1.0.0 â€¢ Made with ðŸ”¥
+                BroGigaChad v1.0.0 • Made with 🔥
             </p>
         </div>
     );

@@ -3,15 +3,45 @@
 import { useState } from 'react';
 import { Flame, Target, Zap } from 'lucide-react';
 import { useUserStore } from '@/stores/userStore';
+import { useRouter } from 'next/navigation';
 
 export default function Onboarding() {
     const [username, setUsername] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const { setUsername: saveUsername, completeOnboarding } = useUserStore();
+    const router = useRouter();
 
-    const handleStart = () => {
+    const handleStart = async () => {
         if (username.trim().length < 2) return;
-        saveUsername(username.trim());
-        completeOnboarding();
+
+        setLoading(true);
+        setError('');
+
+        try {
+            // Update user on server
+            const response = await fetch('/api/user', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username.trim() }),
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Failed to update username');
+            }
+
+            // Update local store
+            saveUsername(username.trim());
+            completeOnboarding();
+
+            // Refresh to ensure server components update
+            router.refresh();
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -70,14 +100,21 @@ export default function Onboarding() {
                     className="w-full px-4 py-3 bg-surface border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                     maxLength={20}
                     onKeyDown={(e) => e.key === 'Enter' && handleStart()}
+                    disabled={loading}
                 />
+
+                {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
                 <button
                     onClick={handleStart}
-                    disabled={username.trim().length < 2}
-                    className="w-full py-4 bg-primary hover:bg-primary-hover disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-bold text-white text-lg transition-colors"
+                    disabled={username.trim().length < 2 || loading}
+                    className="w-full py-4 bg-primary hover:bg-primary-hover disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-bold text-white text-lg transition-colors flex items-center justify-center"
                 >
-                    LET&apos;S GO 🔥
+                    {loading ? (
+                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                        "LET'S GO 🔥"
+                    )}
                 </button>
             </div>
 
@@ -88,3 +125,4 @@ export default function Onboarding() {
         </div>
     );
 }
+

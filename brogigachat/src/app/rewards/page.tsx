@@ -16,10 +16,10 @@ interface Reward {
 }
 
 const AVAILABLE_REWARDS: Reward[] = [
-    { id: '1', name: 'Weekly Champion', description: 'Complete all daily challenges this week', emoji: 'ðŸ†', requirement: '7/7 days', unlocked: true, claimed: false, auraValue: 1000 },
-    { id: '2', name: 'Focus Master', description: 'Complete 10 focus sessions', emoji: 'ðŸ§˜', requirement: '10 sessions', unlocked: false, claimed: false, auraValue: 750 },
-    { id: '3', name: 'Early Bird', description: 'Complete 5 tasks before 7 AM', emoji: 'ðŸŒ…', requirement: '3/5 tasks', unlocked: false, claimed: false, auraValue: 500 },
-    { id: '4', name: 'Perfect Week', description: 'No skips for 7 days', emoji: 'âœ¨', requirement: '5/7 days', unlocked: false, claimed: false, auraValue: 2000 },
+    { id: '1', name: 'Weekly Champion', description: 'Complete all daily challenges this week', emoji: '🏆', requirement: '7/7 days', unlocked: true, claimed: false, auraValue: 1000 },
+    { id: '2', name: 'Focus Master', description: 'Complete 10 focus sessions', emoji: '🧘', requirement: '10 sessions', unlocked: false, claimed: false, auraValue: 750 },
+    { id: '3', name: 'Early Bird', description: 'Complete 5 tasks before 7 AM', emoji: '🌅', requirement: '3/5 tasks', unlocked: false, claimed: false, auraValue: 500 },
+    { id: '4', name: 'Perfect Week', description: 'No skips for 7 days', emoji: '✨', requirement: '5/7 days', unlocked: false, claimed: false, auraValue: 2000 },
 ];
 
 export default function RewardsPage() {
@@ -40,7 +40,7 @@ export default function RewardsPage() {
                         <h1 className="text-2xl font-bold text-white">Rewards</h1>
                         <p className="text-sm text-gray-400">Earn power-ups and bonuses</p>
                     </div>
-                    <div className="text-4xl">ðŸŽ</div>
+                    <div className="text-4xl">🎁</div>
                 </div>
 
                 {/* Unclaimed Rewards Alert */}

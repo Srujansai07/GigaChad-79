@@ -41,7 +41,7 @@ export default function AppClient() {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center">
                 <div className="text-center">
-                    <div className="text-4xl mb-4 animate-pulse">ðŸ”¥</div>
+                    <div className="text-4xl mb-4 animate-pulse">🔥</div>
                     <p className="text-gray-500">Loading BroGigaChad...</p>
                 </div>
             </div>

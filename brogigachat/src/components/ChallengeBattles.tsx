@@ -131,8 +131,8 @@ export default function ChallengeBattles() {
                             <div className="flex items-center justify-between text-sm mb-2">
                                 <span className="text-gray-400">Goal: {battle.goal.value} {battle.goal.metric}</span>
                                 <span className={getProgressColor(battle.myProgress, battle.opponentProgress)}>
-                                    {battle.myProgress > battle.opponentProgress ? 'Winning! ðŸ”¥' :
-                                        battle.myProgress < battle.opponentProgress ? 'Losing! ðŸ˜¤' : 'Tied! âš”ï¸'}
+                                    {battle.myProgress > battle.opponentProgress ? 'Winning! 🔥' :
+                                        battle.myProgress < battle.opponentProgress ? 'Losing! 😤' : 'Tied! ⚔️'}
                                 </span>
                             </div>
 
@@ -154,7 +154,7 @@ export default function ChallengeBattles() {
 
                             {/* Stake */}
                             <p className="text-xs text-gray-500 mt-3 italic">
-                                ðŸ† Stake: {battle.stake}
+                                🏆 Stake: {battle.stake}
                             </p>
                         </div>
                     </div>

@@ -23,7 +23,7 @@ export default function AIPage() {
                         <h1 className="text-2xl font-bold text-white">BroGigaChad AI</h1>
                         <p className="text-sm text-gray-400">Your TopG productivity coach</p>
                     </div>
-                    <div className="text-4xl">ðŸ¤–</div>
+                    <div className="text-4xl">🤖</div>
                 </div>
 
                 {/* Tabs */}

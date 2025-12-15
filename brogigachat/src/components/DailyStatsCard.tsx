@@ -98,7 +98,7 @@ export default function DailyStatsCard({ stats, previousStats }: DailyStatsCardP
                 <div className="mt-4 pt-4 border-t border-gray-800 flex items-center justify-between">
                     <span className="text-sm text-gray-400">Strict Mode Sessions</span>
                     <span className="px-2 py-1 bg-danger/20 text-danger rounded-full text-sm font-bold">
-                        ðŸ”’ {stats.strictModeCount}
+                        🔒 {stats.strictModeCount}
                     </span>
                 </div>
             )}
@@ -107,13 +107,13 @@ export default function DailyStatsCard({ stats, previousStats }: DailyStatsCardP
             <div className="mt-4 pt-4 border-t border-gray-800">
                 <p className="text-center text-sm">
                     {completionRate >= 90 ? (
-                        <span className="text-success">ðŸ”¥ Crushing it today! Keep going!</span>
+                        <span className="text-success">🔥 Crushing it today! Keep going!</span>
                     ) : completionRate >= 70 ? (
-                        <span className="text-aura">ðŸ’ª Solid progress! Finish strong!</span>
+                        <span className="text-aura">💪 Solid progress! Finish strong!</span>
                     ) : completionRate >= 50 ? (
-                        <span className="text-warning">âš¡ Halfway there! Push harder!</span>
+                        <span className="text-warning">⚡ Halfway there! Push harder!</span>
                     ) : (
-                        <span className="text-gray-400">ðŸŽ¯ Let's get those tasks done!</span>
+                        <span className="text-gray-400">🎯 Let's get those tasks done!</span>
                     )}
                 </p>
             </div>

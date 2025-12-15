@@ -52,18 +52,18 @@ export type VoicePack = typeof VOICE_PACKS[number];
 
 // Supported apps for deep linking
 export const SUPPORTED_APPS = [
-    { id: 'twitter', name: 'Twitter/X', scheme: 'twitter://', icon: 'ðŸ¦' },
-    { id: 'instagram', name: 'Instagram', scheme: 'instagram://', icon: 'ðŸ“¸' },
-    { id: 'youtube', name: 'YouTube', scheme: 'youtube://', icon: 'ðŸ“º' },
-    { id: 'spotify', name: 'Spotify', scheme: 'spotify://', icon: 'ðŸŽµ' },
-    { id: 'notion', name: 'Notion', scheme: 'notion://', icon: 'ðŸ“' },
-    { id: 'notes', name: 'Notes', scheme: 'mobilenotes://', icon: 'ðŸ“‹' },
-    { id: 'gym', name: 'Gym', scheme: 'https://google.com/search?q=workout', icon: 'ðŸ‹ï¸' },
-    { id: 'code', name: 'VS Code', scheme: 'vscode://', icon: 'ðŸ’»' },
-    { id: 'figma', name: 'Figma', scheme: 'figma://', icon: 'ðŸŽ¨' },
-    { id: 'slack', name: 'Slack', scheme: 'slack://', icon: 'ðŸ’¬' },
-    { id: 'discord', name: 'Discord', scheme: 'discord://', icon: 'ðŸŽ®' },
-    { id: 'other', name: 'Other', scheme: '', icon: 'ðŸ“±' },
+    { id: 'twitter', name: 'Twitter/X', scheme: 'twitter://', icon: '🐦' },
+    { id: 'instagram', name: 'Instagram', scheme: 'instagram://', icon: '📸' },
+    { id: 'youtube', name: 'YouTube', scheme: 'youtube://', icon: '📺' },
+    { id: 'spotify', name: 'Spotify', scheme: 'spotify://', icon: '🎵' },
+    { id: 'notion', name: 'Notion', scheme: 'notion://', icon: '📝' },
+    { id: 'notes', name: 'Notes', scheme: 'mobilenotes://', icon: '📋' },
+    { id: 'gym', name: 'Gym', scheme: 'https://google.com/search?q=workout', icon: '🏋️' },
+    { id: 'code', name: 'VS Code', scheme: 'vscode://', icon: '💻' },
+    { id: 'figma', name: 'Figma', scheme: 'figma://', icon: '🎨' },
+    { id: 'slack', name: 'Slack', scheme: 'slack://', icon: '💬' },
+    { id: 'discord', name: 'Discord', scheme: 'discord://', icon: '🎮' },
+    { id: 'other', name: 'Other', scheme: '', icon: '📱' },
 ] as const;
 
 // Animation durations
@@ -104,8 +104,8 @@ export const ERROR_MESSAGES = {
 
 // Success messages
 export const SUCCESS_MESSAGES = {
-    TASK_COMPLETE: 'Task crushed! Keep grinding! ðŸ”¥',
-    BADGE_UNLOCKED: 'New badge unlocked! ðŸ†',
-    LEVEL_UP: 'Level up! You\'re ascending! â¬†ï¸',
-    STREAK_MILESTONE: 'Streak milestone reached! ðŸ”¥',
+    TASK_COMPLETE: 'Task crushed! Keep grinding! 🔥',
+    BADGE_UNLOCKED: 'New badge unlocked! 🏆',
+    LEVEL_UP: 'Level up! You\'re ascending! ⬆️',
+    STREAK_MILESTONE: 'Streak milestone reached! 🔥',
 } as const;

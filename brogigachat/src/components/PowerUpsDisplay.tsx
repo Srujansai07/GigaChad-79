@@ -51,7 +51,7 @@ function PowerUpCard({ powerUp, isOwned, isActive, onActivate }: PowerUpCardProp
             )}
             {!isOwned && (
                 <div className="mt-3 py-2 bg-gray-800 text-gray-500 rounded-lg text-sm text-center">
-                    ðŸ”’ Locked
+                    🔒 Locked
                 </div>
             )}
         </div>

@@ -28,7 +28,7 @@ export default function StatsPage() {
                         <h1 className="text-2xl font-bold text-white">Statistics</h1>
                         <p className="text-sm text-gray-400">Your productivity journey</p>
                     </div>
-                    <div className="text-4xl">ðŸ“Š</div>
+                    <div className="text-4xl">📊</div>
                 </div>
 
                 {/* Time Range Filter */}
@@ -97,9 +97,9 @@ export default function StatsPage() {
                     </div>
                     <div className="space-y-3">
                         {[
-                            { emoji: 'ðŸ”¥', name: 'Week Warrior', date: '2 days ago' },
-                            { emoji: 'ðŸ’¯', name: 'Century Hustler', date: '1 week ago' },
-                            { emoji: 'âš¡', name: 'Grinder Status', date: '2 weeks ago' },
+                            { emoji: '🔥', name: 'Week Warrior', date: '2 days ago' },
+                            { emoji: '💯', name: 'Century Hustler', date: '1 week ago' },
+                            { emoji: '⚡', name: 'Grinder Status', date: '2 weeks ago' },
                         ].map((achievement, index) => (
                             <div key={index} className="flex items-center gap-3 p-2 bg-gray-800/50 rounded-lg">
                                 <span className="text-2xl">{achievement.emoji}</span>

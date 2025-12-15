@@ -11,7 +11,7 @@ interface ShareButtonProps {
 
 export default function ShareButton({
     title = 'BroGigaChad',
-    text = "I'm grinding with BroGigaChad - the TopG productivity app! ðŸ”¥",
+    text = "I'm grinding with BroGigaChad - the TopG productivity app! 🔥",
     url = typeof window !== 'undefined' ? window.location.href : ''
 }: ShareButtonProps) {
     const [showOptions, setShowOptions] = useState(false);

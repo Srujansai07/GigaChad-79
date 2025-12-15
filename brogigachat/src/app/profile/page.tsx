@@ -1,4 +1,7 @@
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
+import prisma from '@/lib/prisma';
 import Profile from '@/components/Profile';
 import LevelProgressBar from '@/components/LevelProgressBar';
 import BadgeGrid from '@/components/BadgeGrid';
@@ -12,31 +15,92 @@ export const metadata: Metadata = {
     description: 'Your stats, badges, and achievements',
 };
 
-export default function ProfilePage() {
-    // Mock stats for now
-    const mockStats = {
-        tasksCompleted: 8,
-        tasksTotal: 10,
-        auraGained: 450,
-        auraLost: 50,
-        streak: 14,
-        focusMinutes: 120,
-        strictModeCount: 2,
+async function getUserData() {
+    const supabase = await createClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+
+    if (!authUser) return null;
+
+    const user = await prisma.user.findUnique({
+        where: { id: authUser.id },
+        include: {
+            badges: { include: { badge: true } },
+        }
+    });
+
+    if (!user) return null;
+
+    // Fetch completed tasks for heatmap
+    const completedTasks = await prisma.task.findMany({
+        where: { userId: user.id, completed: true },
+        select: { completedAt: true, id: true }
+    });
+
+    // Calculate stats
+    const tasksCompletedCount = completedTasks.length;
+
+    const tasksTotal = await prisma.task.count({
+        where: { userId: user.id }
+    });
+
+    const tasksToday = await prisma.task.count({
+        where: {
+            userId: user.id,
+            completed: true,
+            completedAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) }
+        }
+    });
+
+    // Map to AnalyticsPayload format for heatmap
+    const heatmapEvents = completedTasks.map(t => ({
+        timestamp: t.completedAt!.getTime(),
+        event: { type: 'task_completed' as const, taskId: t.id, aura: 0, duration: 0, strictMode: false },
+        sessionId: 'server-generated',
+    }));
+
+    return {
+        user,
+        stats: {
+            tasksCompleted: tasksCompletedCount,
+            tasksTotal,
+            tasksToday,
+        },
+        heatmapEvents,
+    };
+}
+
+export default async function ProfilePage() {
+    const data = await getUserData();
+
+    if (!data) {
+        redirect('/login');
+    }
+
+    const { user, stats, heatmapEvents } = data;
+
+    const dailyStats = {
+        tasksCompleted: stats.tasksCompleted,
+        tasksTotal: stats.tasksTotal,
+        auraGained: user.aura, // Simplified
+        auraLost: 0,
+        streak: user.streak,
+        focusMinutes: 0,
+        strictModeCount: user.strictModeCount,
     };
 
     return (
         <div className="min-h-screen bg-background p-4 pb-24 space-y-4">
             {/* Profile Header */}
-            <Profile />
+            <Profile user={{ ...user, tasksCompleted: stats.tasksCompleted, tasksTotal: stats.tasksTotal }} />
 
             {/* Level Progress */}
-            <LevelProgressBar />
+            <LevelProgressBar currentAura={user.aura} />
 
             {/* Streak Display */}
-            <StreakDisplay />
+            <StreakDisplay user={user} />
 
             {/* Daily Stats */}
-            <DailyStatsCard stats={mockStats} />
+            <DailyStatsCard stats={dailyStats} />
 
             {/* Badges */}
             <div className="bg-surface rounded-xl p-4 border border-gray-800">
@@ -44,13 +108,13 @@ export default function ProfilePage() {
                     <h3 className="text-sm font-medium text-gray-400">Badges</h3>
                     <a href="/badges" className="text-xs text-primary">View All</a>
                 </div>
-                <BadgeGrid max={8} />
+                <BadgeGrid badges={user.badges} />
             </div>
 
             {/* Productivity Heatmap */}
-            <ProductivityHeatmap />
+            <ProductivityHeatmap events={heatmapEvents as any[]} />
 
-            <BottomNav />
+            <BottomNav currentScreen="profile" />
         </div>
     );
 }

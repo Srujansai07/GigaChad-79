@@ -4,13 +4,18 @@ import { Flame, Shield, TrendingUp } from 'lucide-react';
 import { useUserStore } from '@/stores/userStore';
 import { calculateStreakInfo } from '@/lib/gamification';
 
-export default function StreakDisplay() {
-    const { user } = useUserStore();
+interface StreakDisplayProps {
+    user?: any; // Replace with proper type
+}
+
+export default function StreakDisplay({ user: serverUser }: StreakDisplayProps) {
+    const { user: clientUser } = useUserStore();
+    const user = serverUser || clientUser;
 
     const streakInfo = calculateStreakInfo(
         user.lastActiveAt ? new Date(user.lastActiveAt) : null,
-        user.streak,
-        user.longestStreak || user.streak
+        user.streak || 0,
+        user.longestStreak || user.streak || 0
     );
 
     const getStreakColor = (streak: number) => {
@@ -79,3 +84,4 @@ export default function StreakDisplay() {
         </div>
     );
 }
+

@@ -195,7 +195,7 @@ export default function FocusSession({ onComplete }: FocusSessionProps) {
 
             {/* Session Counter */}
             <p className="text-center text-gray-500 text-sm mt-4">
-                {sessionsCompleted} sessions completed today â€¢ +{sessionsCompleted * 50} aura
+                {sessionsCompleted} sessions completed today • +{sessionsCompleted * 50} aura
             </p>
         </div>
     );

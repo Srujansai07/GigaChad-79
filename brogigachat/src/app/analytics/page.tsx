@@ -59,15 +59,15 @@ export default function AnalyticsPage() {
                 <h3 className="font-medium text-white mb-3">Insights</h3>
                 <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2 text-gray-400">
-                        <span className="text-yellow-400">ðŸ’¡</span>
+                        <span className="text-yellow-400">💡</span>
                         <span>You're most productive between 9-11 AM. Schedule important tasks then!</span>
                     </li>
                     <li className="flex items-start gap-2 text-gray-400">
-                        <span className="text-red-400">âš ï¸</span>
+                        <span className="text-red-400">⚠️</span>
                         <span>Tuesdays have the most skips. Consider lighter workloads.</span>
                     </li>
                     <li className="flex items-start gap-2 text-gray-400">
-                        <span className="text-green-400">âœ…</span>
+                        <span className="text-green-400">✅</span>
                         <span>Your streak is at an all-time high! Keep it up!</span>
                     </li>
                 </ul>

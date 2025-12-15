@@ -4,9 +4,14 @@ import { useUserStore } from '@/stores/userStore';
 import { getLevelInfo } from '@/lib/gamification';
 import { Zap, TrendingUp } from 'lucide-react';
 
-export default function LevelProgressBar() {
+interface LevelProgressBarProps {
+    currentAura?: number;
+}
+
+export default function LevelProgressBar({ currentAura }: LevelProgressBarProps) {
     const { user } = useUserStore();
-    const levelInfo = getLevelInfo(user.aura);
+    const aura = currentAura !== undefined ? currentAura : user.aura;
+    const levelInfo = getLevelInfo(aura);
 
     return (
         <div className="bg-surface rounded-xl p-4 border border-gray-800">
@@ -21,7 +26,7 @@ export default function LevelProgressBar() {
                 </div>
                 <div className="flex items-center gap-1 text-aura">
                     <Zap size={16} />
-                    <span className="font-bold">{user.aura.toLocaleString()}</span>
+                    <span className="font-bold">{aura.toLocaleString()}</span>
                 </div>
             </div>
 
@@ -67,3 +72,4 @@ export default function LevelProgressBar() {
         </div>
     );
 }
+

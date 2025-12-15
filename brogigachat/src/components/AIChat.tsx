@@ -15,7 +15,7 @@ export default function AIChat() {
         {
             id: '1',
             role: 'assistant',
-            content: "Yo bro! I'm your TopG productivity assistant. What needs to get done today? ðŸ”¥",
+            content: "Yo bro! I'm your TopG productivity assistant. What needs to get done today? 🔥",
             timestamp: new Date(),
         }
     ]);
@@ -62,7 +62,7 @@ export default function AIChat() {
             const assistantMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
-                content: data.response || "Keep grinding bro! ðŸ’ª",
+                content: data.response || "Keep grinding bro! 💪",
                 timestamp: new Date(),
             };
 
@@ -71,7 +71,7 @@ export default function AIChat() {
             const errorMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
-                content: "Bro, I'm having connection issues. But don't let that stop your grind! ðŸ”¥",
+                content: "Bro, I'm having connection issues. But don't let that stop your grind! 🔥",
                 timestamp: new Date(),
             };
             setMessages(prev => [...prev, errorMessage]);

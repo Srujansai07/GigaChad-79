@@ -35,7 +35,7 @@ export function LoadingPage() {
     return (
         <div className="min-h-screen bg-background flex items-center justify-center">
             <div className="text-center">
-                <div className="text-4xl mb-4 animate-pulse">ðŸ”¥</div>
+                <div className="text-4xl mb-4 animate-pulse">🔥</div>
                 <LoadingSpinner size="lg" />
                 <p className="text-gray-500 mt-4">Loading...</p>
             </div>
