@@ -123,24 +123,26 @@ export interface Challenge {
     id: string;
     name: string;
     description: string;
-    type: 'solo' | 'pvp' | 'squad';
+    type: 'SOLO' | 'PVP' | 'SQUAD';
     goal: number;
     progress: number;
     reward: number;
     endsAt: string;
     participants?: number;
+    active: boolean;
 }
 
 // Habit types
 export interface Habit {
     id: string;
     name: string;
-    frequency: 'daily' | 'weekly';
+    frequency: 'DAILY' | 'WEEKLY';
     streak: number;
     completedToday: boolean;
     bestStreak: number;
     auraPerComplete: number;
 }
+
 
 // Notification types
 export interface AppNotification {
