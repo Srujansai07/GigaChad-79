@@ -41,6 +41,7 @@ model User {
   posts             Post[]
   likes             Like[]
   comments          Comment[]
+  items             UserItem[]
   
   @@index([username])
   @@index([aura])
