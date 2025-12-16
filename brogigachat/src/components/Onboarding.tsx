@@ -5,7 +5,11 @@ import { Flame, Target, Zap } from 'lucide-react';
 import { useUserStore } from '@/stores/userStore';
 import { useRouter } from 'next/navigation';
 
-export default function Onboarding() {
+interface OnboardingProps {
+    onComplete?: () => void;
+}
+
+export default function Onboarding({ onComplete }: OnboardingProps) {
     const [username, setUsername] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
