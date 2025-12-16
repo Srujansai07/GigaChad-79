@@ -9,6 +9,7 @@ interface TaskState {
     activeNotificationTaskId: string | null;
     strictModeActive: boolean;
     strictModeTask: Task | null;
+    showAddModal: boolean;
 
     newlyUnlockedBadges: any[]; // Using any[] to avoid circular dependency or complex type imports for now
     clearNewBadges: () => void;
@@ -19,6 +20,7 @@ interface TaskState {
     completeTask: (taskId: string, fromStrictMode?: boolean) => Promise<void>;
     deleteTask: (taskId: string) => Promise<void>;
     extendTask: (taskId: string, minutes: number) => Promise<void>;
+    setShowAddModal: (show: boolean) => void;
 
     // UI Actions
     triggerNotification: (taskId: string) => void;
@@ -35,8 +37,10 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     strictModeActive: false,
     strictModeTask: null,
     newlyUnlockedBadges: [],
+    showAddModal: false,
 
     clearNewBadges: () => set({ newlyUnlockedBadges: [] }),
+    setShowAddModal: (show: boolean) => set({ showAddModal: show }),
 
     fetchTasks: async () => {
         set({ isLoading: true, error: null });
