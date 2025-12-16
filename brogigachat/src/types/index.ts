@@ -118,6 +118,18 @@ export interface Badge {
     unlockedAt?: string;
 }
 
+// Badge definitions for display
+export const BADGES: { id: string; name: string; emoji: string; description: string }[] = [
+    { id: 'first_blood', name: 'First Blood', emoji: '🩸', description: 'Complete first task' },
+    { id: 'streak_7', name: 'Week Warrior', emoji: '🔥', description: '7 day streak' },
+    { id: 'streak_30', name: 'Month Master', emoji: '⚡', description: '30 day streak' },
+    { id: 'tasks_10', name: 'Hustler', emoji: '💪', description: 'Complete 10 tasks' },
+    { id: 'tasks_100', name: 'Machine', emoji: '🤖', description: 'Complete 100 tasks' },
+    { id: 'strict_survivor', name: 'Strict Survivor', emoji: '🛡️', description: 'Survive strict mode' },
+    { id: 'night_owl', name: 'Night Owl', emoji: '🦉', description: 'Complete tasks after midnight' },
+    { id: 'founder', name: 'OG Founder', emoji: '🔥', description: 'Early adopter' },
+];
+
 // Challenge types
 export interface Challenge {
     id: string;
