@@ -37,6 +37,10 @@ model User {
   tasks             Task[]
   auraHistory       AuraEvent[]
   badges            UserBadge[]
+  challenges        ChallengeParticipant[]
+  posts             Post[]
+  likes             Like[]
+  comments          Comment[]
   
   @@index([username])
   @@index([aura])
@@ -241,6 +245,24 @@ model Challenge {
   
   @@index([type])
   @@index([active])
+
+  participants ChallengeParticipant[]
+}
+
+model ChallengeParticipant {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challengeId String
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  
+  progress    Int       @default(0)
+  completed   Boolean   @default(false)
+  joinedAt    DateTime  @default(now())
+  completedAt DateTime?
+  
+  @@unique([userId, challengeId])
+  @@index([challengeId])
 }
 
 enum ChallengeType {
@@ -306,3 +328,102 @@ model Goal {
   @@index([completed])
 }
 
+  @@index([userId])
+  @@index([completed])
+}
+
+// ==========================================
+// SHOP & INVENTORY
+// ==========================================
+model ShopItem {
+  id          String    @id @default(cuid())
+  name        String
+  description String
+  cost        Int
+  type        ItemType
+  emoji       String?
+  
+  // Metadata for effects
+  effect      Json?     // e.g. { "duration": 24, "multiplier": 2 }
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  users       UserItem[]
+}
+
+model UserItem {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId      String
+  item        ShopItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  
+  quantity    Int       @default(1)
+  acquiredAt  DateTime  @default(now())
+  
+  @@unique([userId, itemId])
+  @@index([userId])
+}
+
+enum ItemType {
+  POWERUP
+  COSMETIC
+  THEME
+  BADGE
+}
+
+// ==========================================
+// SOCIAL FEED
+// ==========================================
+model Post {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  content   String
+  imageUrl  String?
+  type      PostType  @default(FLEX)
+  
+  // Stats
+  likes     Like[]
+  comments  Comment[]
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, postId])
+  @@index([postId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  content   String
+  createdAt DateTime @default(now())
+  
+  @@index([postId])
+}
+
+enum PostType {
+  FLEX
+  ACHIEVEMENT
+  UPDATE
+}

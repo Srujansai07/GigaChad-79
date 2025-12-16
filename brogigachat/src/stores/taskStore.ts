@@ -10,6 +10,9 @@ interface TaskState {
     strictModeActive: boolean;
     strictModeTask: Task | null;
 
+    newlyUnlockedBadges: any[]; // Using any[] to avoid circular dependency or complex type imports for now
+    clearNewBadges: () => void;
+
     // Actions
     fetchTasks: () => Promise<void>;
     addTask: (task: Omit<Task, 'id' | 'created' | 'completed' | 'skips'>) => Promise<void>;
@@ -31,6 +34,9 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     activeNotificationTaskId: null,
     strictModeActive: false,
     strictModeTask: null,
+    newlyUnlockedBadges: [],
+
+    clearNewBadges: () => set({ newlyUnlockedBadges: [] }),
 
     fetchTasks: async () => {
         set({ isLoading: true, error: null });
@@ -85,7 +91,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             });
 
             if (!response.ok) throw new Error('Failed to complete task');
-            const { auraGained } = await response.json();
+            const { auraGained, newBadges } = await response.json();
 
             // Update user store
             const userStore = useUserStore.getState();
@@ -93,6 +99,11 @@ export const useTaskStore = create<TaskState>((set, get) => ({
             userStore.incrementTasksCompleted();
             userStore.incrementStreak();
             if (fromStrictMode) userStore.incrementStrictModeCount();
+
+            // Handle new badges
+            if (newBadges && newBadges.length > 0) {
+                set({ newlyUnlockedBadges: newBadges });
+            }
 
             // Refresh tasks to ensure sync
             get().fetchTasks();

@@ -1,37 +1,59 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
-import { HabitFrequency } from '@prisma/client';
 
-// GET /api/habits - List user habits
-export async function GET(request: Request) {
+export async function GET() {
     try {
-        const supabase = await createClient();
+        const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        const prismaUser = await prisma.user.findUnique({
+            where: { email: user.email! },
+        });
+
+        if (!prismaUser) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
         const habits = await prisma.habit.findMany({
-            where: { userId: user.id },
+            where: { userId: prismaUser.id },
             orderBy: { createdAt: 'desc' },
         });
 
-        return NextResponse.json({
-            habits,
-            total: habits.length,
+        // Check if habits need to be reset for the new day
+        // Logic: If lastCompletedAt is not today, completedToday should be false.
+        // However, we should probably do this check/update when fetching or via a cron job.
+        // For MVP, let's do a quick check on fetch.
+
+        const today = new Date().toDateString();
+        const updatedHabits = habits.map(habit => {
+            if (habit.lastCompletedAt && new Date(habit.lastCompletedAt).toDateString() !== today) {
+                return { ...habit, completedToday: false };
+            }
+            return habit;
         });
+
+        // We might want to update the DB if we found stale 'completedToday' flags, 
+        // but for read performance, we can just return the corrected state 
+        // and let the 'complete' action handle the DB update logic for streaks/resets.
+        // Actually, if we don't update DB, the user might see 'completed' if they refresh and we don't run this logic.
+        // Let's return the computed state.
+
+        return NextResponse.json({ habits: updatedHabits });
+
     } catch (error) {
-        console.error('Habits GET error:', error);
-        return NextResponse.json({ error: 'Failed to fetch habits' }, { status: 500 });
+        console.error('Habits fetch error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
 
-// POST /api/habits - Create new habit
 export async function POST(request: Request) {
     try {
-        const supabase = await createClient();
+        const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
@@ -39,96 +61,32 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { name, frequency, auraPerComplete } = body;
+        const { name, frequency } = body;
 
-        if (!name || !frequency) {
-            return NextResponse.json({ error: 'Name and frequency required' }, { status: 400 });
+        if (!name) {
+            return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+        }
+
+        const prismaUser = await prisma.user.findUnique({
+            where: { email: user.email! },
+        });
+
+        if (!prismaUser) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
         const habit = await prisma.habit.create({
             data: {
-                userId: user.id,
+                userId: prismaUser.id,
                 name,
-                frequency: frequency.toUpperCase() as HabitFrequency,
-                auraPerComplete: auraPerComplete || 50,
+                frequency: frequency || 'DAILY',
             },
         });
 
-        return NextResponse.json({
-            success: true,
-            habit,
-        });
+        return NextResponse.json({ habit });
+
     } catch (error) {
-        console.error('Habits POST error:', error);
-        return NextResponse.json({ error: 'Failed to create habit' }, { status: 500 });
+        console.error('Habit create error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
-
-// PATCH /api/habits - Complete habit
-export async function PATCH(request: Request) {
-    try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        const body = await request.json();
-        const { habitId, action } = body;
-
-        if (!habitId) {
-            return NextResponse.json({ error: 'Habit ID required' }, { status: 400 });
-        }
-
-        if (action === 'complete') {
-            const habit = await prisma.habit.findUnique({ where: { id: habitId } });
-            if (!habit) return NextResponse.json({ error: 'Habit not found' }, { status: 404 });
-
-            // Update habit stats
-            const updatedHabit = await prisma.habit.update({
-                where: { id: habitId },
-                data: {
-                    completedToday: true,
-                    streak: { increment: 1 },
-                    lastCompletedAt: new Date(),
-                    // Update best streak if current streak > best streak (logic simplified for now)
-                },
-            });
-
-            // Award aura
-            await prisma.user.update({
-                where: { id: user.id },
-                data: { aura: { increment: habit.auraPerComplete } },
-            });
-
-            return NextResponse.json({
-                success: true,
-                message: 'Habit completed',
-                auraGained: habit.auraPerComplete,
-                habit: updatedHabit,
-            });
-        } else if (action === 'uncomplete') {
-            // Revert completion (simplified)
-            const updatedHabit = await prisma.habit.update({
-                where: { id: habitId },
-                data: {
-                    completedToday: false,
-                    streak: { decrement: 1 },
-                },
-            });
-
-            return NextResponse.json({
-                success: true,
-                message: 'Habit uncompleted',
-                habit: updatedHabit,
-            });
-        }
-
-        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
-    } catch (error) {
-        console.error('Habits PATCH error:', error);
-        return NextResponse.json({ error: 'Failed to update habit' }, { status: 500 });
-    }
-}
-

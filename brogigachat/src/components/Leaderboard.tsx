@@ -1,36 +1,52 @@
 'use client';
 
-import { Trophy, TrendingUp } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Trophy, Medal, Crown, Flame, Loader2 } from 'lucide-react';
 import { useUserStore } from '@/stores/userStore';
 
-// Mock leaderboard data
-const mockLeaderboard = [
-    { rank: 1, username: 'SigmaGrinder', aura: 187000, level: 'TopG' },
-    { rank: 2, username: 'HustleKing', aura: 156000, level: 'TopG' },
-    { rank: 3, username: 'DisciplinedAF', aura: 134000, level: 'Sigma' },
-    { rank: 4, username: 'AlphaMentality', aura: 89000, level: 'Alpha' },
-    { rank: 5, username: 'GrindNeverStops', aura: 67000, level: 'Alpha' },
-];
-
-const getRankColor = (rank: number) => {
-    if (rank === 1) return 'text-yellow-400';
-    if (rank === 2) return 'text-gray-300';
-    if (rank === 3) return 'text-orange-400';
-    return 'text-gray-500';
-};
-
-const getRankEmoji = (rank: number) => {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return `#${rank}`;
-};
+interface LeaderboardUser {
+    id: string;
+    username: string;
+    aura: number;
+    level: number;
+    streak: number;
+    badges: string[];
+    rank: number;
+    isCurrentUser: boolean;
+}
 
 export default function Leaderboard() {
-    const { user, levelInfo } = useUserStore();
+    const { user } = useUserStore();
+    const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchLeaderboard = async () => {
+            try {
+                const res = await fetch('/api/leaderboard');
+                if (res.ok) {
+                    const data = await res.json();
+                    setLeaderboard(data.leaderboard);
+                }
+            } catch (error) {
+                console.error('Failed to fetch leaderboard', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchLeaderboard();
+    }, []);
+
+    const getRankIcon = (rank: number) => {
+        if (rank === 1) return <Crown className="text-yellow-500" size={24} fill="currentColor" />;
+        if (rank === 2) return <Medal className="text-gray-300" size={24} fill="currentColor" />;
+        if (rank === 3) return <Medal className="text-amber-700" size={24} fill="currentColor" />;
+        return <span className="font-bold text-gray-500 w-6 text-center">{rank}</span>;
+    };
 
     return (
-        <div className="p-4 space-y-6">
+        <div className="p-4 space-y-6 pb-24">
             {/* Header */}
             <div className="text-center">
                 <h1 className="text-2xl font-bold text-white flex items-center justify-center gap-2">
@@ -40,67 +56,50 @@ export default function Leaderboard() {
                 <p className="text-gray-400 text-sm mt-1">Compete with the best</p>
             </div>
 
-            {/* Your Rank Card */}
-            <div className="bg-gradient-to-r from-primary/20 to-transparent border border-primary/30 rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-xl font-bold">
-                            {user.username.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                            <p className="font-bold text-white">{user.username}</p>
-                            <p className={`text-sm ${levelInfo.color}`}>{levelInfo.name}</p>
-                        </div>
-                    </div>
-                    <div className="text-right">
-                        <p className="text-aura font-bold">{user.aura.toLocaleString()} Aura</p>
-                        <div className="flex items-center gap-1 text-success text-sm">
-                            <TrendingUp size={14} />
-                            <span>Climbing!</span>
-                        </div>
-                    </div>
+            {isLoading ? (
+                <div className="flex justify-center py-12">
+                    <Loader2 className="animate-spin text-primary" size={32} />
                 </div>
-                {user.aura < 1000 && (
-                    <p className="text-xs text-gray-400 mt-3">
-                        🚀 Complete more tasks to climb the ranks!
-                    </p>
-                )}
-            </div>
-
-            {/* Top 5 */}
-            <div>
-                <h2 className="font-bold text-lg mb-3">Top Grinders</h2>
+            ) : (
                 <div className="space-y-2">
-                    {mockLeaderboard.map((entry) => (
+                    {leaderboard.map((u) => (
                         <div
-                            key={entry.rank}
-                            className={`flex items-center justify-between p-4 rounded-lg ${entry.rank <= 3 ? 'bg-surface border border-gray-700' : 'bg-surface/50'
+                            key={u.id}
+                            className={`flex items-center gap-4 p-4 rounded-xl border ${u.isCurrentUser
+                                    ? 'bg-primary/10 border-primary/50'
+                                    : 'bg-surface border-white/5'
                                 }`}
                         >
-                            <div className="flex items-center gap-3">
-                                <span className={`text-xl font-bold ${getRankColor(entry.rank)}`}>
-                                    {getRankEmoji(entry.rank)}
-                                </span>
-                                <div>
-                                    <p className="font-semibold text-white">@{entry.username}</p>
-                                    <p className="text-xs text-gray-400">{entry.level}</p>
+                            <div className="flex-shrink-0 w-8 flex justify-center">
+                                {getRankIcon(u.rank)}
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                    <p className={`font-bold truncate ${u.isCurrentUser ? 'text-primary' : 'text-white'}`}>
+                                        {u.username}
+                                    </p>
+                                    {u.badges.slice(0, 3).map((emoji, i) => (
+                                        <span key={i} className="text-xs">{emoji}</span>
+                                    ))}
+                                </div>
+                                <div className="flex items-center gap-3 text-xs text-gray-400">
+                                    <span>Lvl {u.level}</span>
+                                    <span className="flex items-center gap-1">
+                                        <Flame size={10} className="text-streak" />
+                                        {u.streak}
+                                    </span>
                                 </div>
                             </div>
+
                             <div className="text-right">
-                                <p className="text-aura font-bold">{entry.aura.toLocaleString()}</p>
-                                <p className="text-xs text-gray-500">Aura</p>
+                                <p className="font-bold text-aura">{u.aura.toLocaleString()}</p>
+                                <p className="text-[10px] text-gray-500 uppercase tracking-wider">Aura</p>
                             </div>
                         </div>
                     ))}
                 </div>
-            </div>
-
-            {/* Coming Soon */}
-            <div className="text-center py-8">
-                <p className="text-gray-500 text-sm">
-                    🌍 City & Country rankings coming soon...
-                </p>
-            </div>
+            )}
         </div>
     );
 }

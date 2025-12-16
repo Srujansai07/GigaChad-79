@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
 import { calculateAura } from '@/lib/gamification';
+import { checkAndUnlockBadges } from '@/lib/gamification/checkBadges';
 
 // GET: Get single task
 export async function GET(
@@ -98,7 +99,10 @@ export async function PATCH(
                 },
             });
 
-            return NextResponse.json({ task: updatedTask, auraGained });
+            // Check for new badges
+            const newBadges = await checkAndUnlockBadges(user.id);
+
+            return NextResponse.json({ task: updatedTask, auraGained, newBadges });
         }
 
         if (action === 'skip') {

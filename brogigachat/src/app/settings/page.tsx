@@ -1,17 +1,5 @@
-import { Metadata } from 'next';
-import SettingsPage from '@/components/SettingsPage';
-import BottomNav from '@/components/BottomNav';
+import Settings from '@/components/Settings';
 
-export const metadata: Metadata = {
-    title: 'Settings | BroGigaChad',
-    description: 'App settings and preferences',
-};
-
-export default function SettingsRoute() {
-    return (
-        <>
-            <SettingsPage />
-            <BottomNav />
-        </>
-    );
+export default function SettingsPage() {
+    return <Settings />;
 }

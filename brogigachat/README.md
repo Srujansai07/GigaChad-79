@@ -8,11 +8,17 @@ A digital accountability partner that **forces action**, not just reminds.
 
 - ✅ **Task Management** - Add, complete, and track tasks
 - ✅ **Aura Points System** - Earn status points with multipliers
-- ✅ **Skip & Extend** - Extend tasks but face consequences
+- ✅ **Habits & Streaks** - Track daily/weekly habits
+- ✅ **Challenges** - PvP and Squad battles
+- ✅ **The Shop** - Spend Aura on power-ups and themes
+- ✅ **Advanced Analytics** - Visual charts of your progress
+- ✅ **Social Feed** - Flex your gains and like/comment
+- ✅ **AI Coach** - Personalized motivation (Gemini powered)
+- ✅ **Mobile PWA** - Installable on iOS/Android
 - ✅ **Strict Mode** - Skip 3 times and I take control
 - ✅ **Level Progression** - Rookie → Grinder → Hustler → Alpha → Sigma → TopG → Legend
 - ✅ **Leaderboard** - Compete globally
-- ✅ **Persistent Storage** - Progress saved locally
+- ✅ **Persistent Storage** - Progress saved locally & cloud
 
 ## Tech Stack
 

@@ -20,13 +20,15 @@ export default function TaskCard({ task }: TaskCardProps) {
 
     const handleComplete = async () => {
         setIsCompleting(true);
-        try {
-            await completeTask(task.id, false);
-        } catch (error) {
-            console.error('Failed to complete task:', error);
-        } finally {
-            setIsCompleting(false);
-        }
+        // Wait for exit animation
+        setTimeout(async () => {
+            try {
+                await completeTask(task.id, false);
+            } catch (error) {
+                console.error('Failed to complete task:', error);
+                setIsCompleting(false);
+            }
+        }, 500);
     };
 
     const handleTestNotification = () => {
@@ -40,7 +42,8 @@ export default function TaskCard({ task }: TaskCardProps) {
     potentialAura = Math.floor(potentialAura);
 
     return (
-        <div className="bg-surface p-4 rounded-lg border border-gray-800">
+        <div className={`bg-surface p-4 rounded-lg border border-gray-800 transition-all duration-500 animate-slide-up ${isCompleting ? 'opacity-0 transform scale-95' : 'opacity-100'
+            }`}>
             <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                     <h3 className="font-semibold text-white">{task.title}</h3>

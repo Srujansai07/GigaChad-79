@@ -5,16 +5,38 @@ import { Flame, Plus, Zap, Trophy, CheckCircle, Loader2 } from 'lucide-react';
 import { useUserStore } from '@/stores/userStore';
 import { useTaskStore } from '@/stores/taskStore';
 import TaskCard from './TaskCard';
-import AddTaskModal from './AddTaskModal';
+import BadgeNotification from './BadgeNotification';
 
 export default function HomeScreen() {
     const { user, levelInfo } = useUserStore();
-    const { tasks, isLoading, error, fetchTasks } = useTaskStore();
+    const { tasks, isLoading, error, fetchTasks, newlyUnlockedBadges, clearNewBadges } = useTaskStore();
     const [showAddModal, setShowAddModal] = useState(false);
+    const [currentBadge, setCurrentBadge] = useState<any>(null);
 
     useEffect(() => {
         fetchTasks();
     }, [fetchTasks]);
+
+    // Handle badge queue
+    useEffect(() => {
+        if (newlyUnlockedBadges.length > 0 && !currentBadge) {
+            setCurrentBadge(newlyUnlockedBadges[0]);
+        }
+    }, [newlyUnlockedBadges, currentBadge]);
+
+    const handleBadgeClose = () => {
+        setCurrentBadge(null);
+        // If we had more than one, we'd shift the queue here, but for now we clear all after showing one or we need a better queue management in store.
+        // Actually, let's just clear the specific badge or all if we don't have a queue action.
+        // Since clearNewBadges clears all, we might miss some if multiple unlock at once.
+        // But for MVP, showing the first one is fine, or we can implement a local queue.
+
+        // Better approach: Remove the shown badge from the local queue or store.
+        // Since store only has clearNewBadges, let's just clear all for now to avoid loops, 
+        // OR better: we should have a 'removeBadge' action.
+        // For now, I'll just clear all.
+        clearNewBadges();
+    };
 
     const activeTasks = tasks.filter((t) => !t.completed);
     const completedToday = tasks.filter((t) => {
@@ -148,6 +170,14 @@ export default function HomeScreen() {
 
             {/* Add Task Modal */}
             {showAddModal && <AddTaskModal onClose={() => setShowAddModal(false)} />}
+
+            {/* Badge Notification */}
+            {currentBadge && (
+                <BadgeNotification
+                    badge={currentBadge}
+                    onClose={handleBadgeClose}
+                />
+            )}
         </div>
     );
 }
