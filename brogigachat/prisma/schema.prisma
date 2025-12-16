@@ -328,10 +328,6 @@ model Goal {
   @@index([completed])
 }
 
-  @@index([userId])
-  @@index([completed])
-}
-
 // ==========================================
 // SHOP & INVENTORY
 // ==========================================
