@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { useUserStore } from '@/stores/userStore';
 import { useTaskStore } from '@/stores/taskStore';
 import Onboarding from '@/components/Onboarding';
-import HomeScreen from '@/components/HomeScreen';
-import Leaderboard from '@/components/Leaderboard';
 import dynamic from 'next/dynamic';
 import Skeleton from '@/components/Skeleton';
 import BottomNav from '@/components/BottomNav';
